@@ -1,19 +1,22 @@
 {
   "compilerOptions": {
-    "module": "nodenext",
-    "moduleResolution": "nodenext",
-    "resolvePackageJsonExports": true,
-    "esModuleInterop": true,
-    "isolatedModules": true,
+    "module": "commonjs",
     "declaration": true,
     "removeComments": true,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "allowSyntheticDefaultImports": true,
+    "strictPropertyInitialization": false,
     "target": "ES2023",
+    "types": ["node"],
     "sourceMap": true,
     "outDir": "./dist",
     "baseUrl": "./",
+    "paths": {
+      "@api/*": ["src/modules/api/*"],
+      "@infra/*": ["src/modules/infra/*"],
+      "@shared/*": ["src/modules/shared/*"]
+    },
     "incremental": true,
     "skipLibCheck": true,
     "strictNullChecks": true,
