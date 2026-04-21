@@ -3,7 +3,6 @@ import {
     Column,
     CreateDateColumn,
     Entity,
-    OneToMany,
     PrimaryGeneratedColumn,
     UpdateDateColumn,
 } from 'typeorm';
@@ -14,21 +13,25 @@ export class RequestEntity {
     id: string;
 
     @Column()
-    surname: string;
-
-    @Column({})
     name: string;
 
-    @Column({ nullable: true })
-    patronymic: string;
-
-    @Column({ type: 'date' })
-    date: Date;
+    @Column()
+    surname: string;
 
     @Column()
-    hours: number;
+    phone: string;
 
-    @Column({ type: 'enum', enum: RequestStatusEnum, default: RequestStatusEnum.PENDING })
+    @Column({ type: 'timestamptz' })
+    date: Date;
+
+    @Column({ type: 'text', nullable: true })
+    comment: string | null;
+
+    @Column({
+        type: 'enum',
+        enum: RequestStatusEnum,
+        default: RequestStatusEnum.PENDING,
+    })
     status: RequestStatusEnum;
 
     @CreateDateColumn()

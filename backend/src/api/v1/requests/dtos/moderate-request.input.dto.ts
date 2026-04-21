@@ -1,10 +1,9 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { IsEnum } from 'class-validator';
 import { RequestStatusEnum } from 'src/shared/enum';
 
 export class ModerateRequestInputDto {
-    @ApiProperty({
-        title: 'Статус',
-        enum: RequestStatusEnum,
-    })
+    @ApiProperty({ enum: RequestStatusEnum, description: 'Новый статус заявки' })
+    @IsEnum(RequestStatusEnum)
     status: RequestStatusEnum;
 }

@@ -19,10 +19,10 @@ export const dataSourceOptions: DataSourceOptions = {
     password: configService.getOrThrow<string>('DB_PASSWORD'),
     database: configService.getOrThrow<string>('DB_NAME'),
     entities: [join(__dirname, '../../**/*.entity{.ts,.js}')],
-    logging: true,
-    synchronize: false,
+    logging: false,
+    synchronize: true,
     migrations: [join(__dirname, 'migrations/*{.ts,.js}')],
-    migrationsRun: true,
+    migrationsRun: false,
     migrationsTableName: 'typeorm_migrations',
     namingStrategy: new SnakeNamingStrategy(),
 };

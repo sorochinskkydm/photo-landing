@@ -1,9 +1,8 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { RequestEntity } from 'src/infra/postgres/entities';
 import { Repository } from 'typeorm';
-import { CreateRequestInputDto } from './dtos';
-import { ModerateRequestInputDto } from './dtos/moderate-request.input.dto';
+import { CreateRequestInputDto, ModerateRequestInputDto } from './dtos';
 
 @Injectable()
 export class RequestService {
@@ -12,21 +11,27 @@ export class RequestService {
         private readonly repo: Repository<RequestEntity>,
     ) {}
 
-    public async create(dto: CreateRequestInputDto): Promise<RequestEntity> {
-        const { date } = dto;
-        const requests = await this.repo.find({ where: { date } });
-        if (requests.length) throw new BadRequestException('Заявка с такой датой уже существует');
-        return this.repo.create({ ...dto });
+    public create(dto: CreateRequestInputDto): Promise<RequestEntity> {
+        const entity = this.repo.create({
+            ...dto,
+            date: new Date(dto.date),
+        });
+        return this.repo.save(entity);
     }
 
-    public async moderate(id: string, { status }: ModerateRequestInputDto): Promise<boolean> {
+    public findAll(): Promise<RequestEntity[]> {
+        return this.repo.find({ order: { createdAt: 'DESC' } });
+    }
+
+    public async moderate(
+        id: string,
+        { status }: ModerateRequestInputDto,
+    ): Promise<RequestEntity> {
         const request = await this.repo.findOne({ where: { id } });
-        if (!request) throw new BadRequestException('Заявка не найдена');
-        const result = await this.repo.update({ id }, { status });
-        return result.affected === 1;
-    }
-
-    public async getAvailableHours(date: Date) {
-        const requests = await this.repo.find({ where: { date }, select: ['id', 'date', 'hours'] });
+        if (!request) {
+            throw new NotFoundException('Заявка не найдена');
+        }
+        request.status = status;
+        return this.repo.save(request);
     }
 }

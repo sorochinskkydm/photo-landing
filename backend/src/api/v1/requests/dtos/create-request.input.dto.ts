@@ -1,33 +1,51 @@
 import { ApiProperty } from '@nestjs/swagger';
+import {
+    IsDateString,
+    IsNotEmpty,
+    IsOptional,
+    IsString,
+    Matches,
+    MaxLength,
+    MinLength,
+} from 'class-validator';
 
 export class CreateRequestInputDto {
-    @ApiProperty({
-        title: 'Имя',
-        example: 'Дарья',
-    })
+    @ApiProperty({ example: 'Дарья', description: 'Имя клиента' })
+    @IsString()
+    @IsNotEmpty()
+    @MinLength(2)
+    @MaxLength(50)
     name: string;
 
-    @ApiProperty({
-        title: 'Фамилия',
-        example: 'Иванова',
-    })
+    @ApiProperty({ example: 'Иванова', description: 'Фамилия клиента' })
+    @IsString()
+    @IsNotEmpty()
+    @MinLength(2)
+    @MaxLength(50)
     surname: string;
 
-    @ApiProperty({
-        title: 'Отчество',
-        example: 'Ивановна',
+    @ApiProperty({ example: '+79991234567', description: 'Телефон для связи' })
+    @IsString()
+    @IsNotEmpty()
+    @Matches(/^\+?[0-9\s\-()]{7,20}$/, {
+        message: 'Некорректный формат телефона',
     })
-    patronymic: string;
+    phone: string;
 
     @ApiProperty({
-        title: 'Дата',
-        example: '2023-01-01',
+        example: '2026-05-01T12:00:00.000Z',
+        description: 'Желаемая дата съёмки (ISO 8601)',
     })
-    date: Date;
+    @IsDateString()
+    date: string;
 
     @ApiProperty({
-        title: 'Количество человек',
-        example: 2,
+        required: false,
+        example: 'Хочу семейную фотосессию',
+        description: 'Комментарий',
     })
-    countOfPeople: number;
+    @IsOptional()
+    @IsString()
+    @MaxLength(500)
+    comment?: string;
 }
