@@ -30,16 +30,18 @@ const options = new DocumentBuilder()
     .build();
 
 export function createSwagger(app: INestApplication): INestApplication {
-    const login = configService.getOrThrow<string>('SWAGGER_LOGIN');
-    const password = configService.getOrThrow<string>('SWAGGER_PASS');
+    const login = configService.get<string>('SWAGGER_LOGIN');
+    const password = configService.get<string>('SWAGGER_PASS');
 
-    app.use(
-        SWAGGER_PATH,
-        expressBasicAuth({
-            challenge: true,
-            users: { [login]: password },
-        }),
-    );
+    if (login && password) {
+        app.use(
+            SWAGGER_PATH,
+            expressBasicAuth({
+                challenge: true,
+                users: { [login]: password },
+            }),
+        );
+    }
 
     const document = SwaggerModule.createDocument(app, options);
     SwaggerModule.setup(SWAGGER_PATH, app, document, {

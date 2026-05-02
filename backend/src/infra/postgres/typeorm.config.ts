@@ -11,13 +11,21 @@ dotenv.config();
 
 const configService = new ConfigService();
 
+const databaseUrl = configService.get<string>('DATABASE_URL');
+const useSsl = configService.get<string>('DB_SSL') === 'true' || !!databaseUrl;
+
 export const dataSourceOptions: DataSourceOptions = {
     type: 'postgres',
-    host: configService.getOrThrow<string>('DB_HOST'),
-    port: configService.getOrThrow<number>('DB_PORT'),
-    username: configService.getOrThrow<string>('DB_LOGIN'),
-    password: configService.getOrThrow<string>('DB_PASSWORD'),
-    database: configService.getOrThrow<string>('DB_NAME'),
+    ...(databaseUrl
+        ? { url: databaseUrl }
+        : {
+              host: configService.getOrThrow<string>('DB_HOST'),
+              port: configService.getOrThrow<number>('DB_PORT'),
+              username: configService.getOrThrow<string>('DB_LOGIN'),
+              password: configService.getOrThrow<string>('DB_PASSWORD'),
+              database: configService.getOrThrow<string>('DB_NAME'),
+          }),
+    ssl: useSsl ? { rejectUnauthorized: false } : false,
     entities: [join(__dirname, '../../**/*.entity{.ts,.js}')],
     logging: false,
     synchronize: true,
